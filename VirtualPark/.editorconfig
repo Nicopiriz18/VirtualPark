@@ -1,0 +1,39 @@
+root = true
+
+# All files
+[*]
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+
+# C# files
+[*.cs]
+
+# IDE0130: Namespace does not match folder structure - disabled
+dotnet_diagnostic.IDE0130.severity = none
+
+# IDE0003: Name can be simplified - set to silent instead of error
+dotnet_diagnostic.IDE0003.severity = silent
+
+# this. preferences - allow using this. qualifier
+dotnet_style_qualification_for_field = false:silent
+dotnet_style_qualification_for_property = false:silent
+dotnet_style_qualification_for_method = false:silent
+dotnet_style_qualification_for_event = false:silent
+
+# StyleCop rules - disable warnings
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1010.severity = none
+dotnet_diagnostic.SA1117.severity = none
+dotnet_diagnostic.SA1200.severity = none
+dotnet_diagnostic.SA1201.severity = none
+dotnet_diagnostic.SA1202.severity = none
+dotnet_diagnostic.SA1204.severity = none
+dotnet_diagnostic.SA1206.severity = none
+dotnet_diagnostic.SA1214.severity = none
+dotnet_diagnostic.SA1600.severity = none

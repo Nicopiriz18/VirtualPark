@@ -1,0 +1,7 @@
+.fab-clock {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+  z-index: 1000;
+  box-shadow: 0 10px 24px rgba(25, 118, 210, 0.35);
+}

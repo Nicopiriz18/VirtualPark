@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  @apply bg-surface-light text-neutral font-sans;
+}
+
+a {
+  @apply text-primary no-underline;
+}
+
+.form-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.form-paper {
+  display: block;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid mat-form-field {
+  width: 100%;
+}
+
+.form-grid--two {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .form-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+.loader {
+  display: flex;
+  min-height: 200px;
+  align-items: center;
+  justify-content: center;
+}

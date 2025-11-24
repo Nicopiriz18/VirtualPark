@@ -1,0 +1,81 @@
+
+    <section class="max-w-3xl mx-auto p-6 bg-white/80 backdrop-blur rounded-xl shadow">
+      <h2 class="text-2xl font-semibold text-slate-800 mb-4">Registrar salida</h2>
+
+      <div class="grid gap-5">
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-slate-600">Atracción</label>
+          <div class="flex gap-3">
+            <select
+              class="flex-1 border rounded px-3 py-2 bg-white/90 focus:outline-none focus:ring focus:ring-slate-300"
+              [(ngModel)]="selectedAttractionId"
+              name="selectedAttractionId"
+            >
+              <option value="">-- Seleccione --</option>
+              <option *ngFor="let a of attractions" [value]="a.id">
+                {{ a.name }} ({{ a.type }})
+              </option>
+            </select>
+            <button
+              type="button"
+              class="px-4 py-2 bg-slate-100 text-sm font-semibold text-slate-700 rounded hover:bg-slate-200 transition"
+              (click)="refreshAttractions()"
+            >
+              Refrescar
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-slate-600">Visitante</label>
+          <div class="flex gap-3">
+            <select
+              class="flex-1 border rounded px-3 py-2 bg-white/90 focus:outline-none focus:ring focus:ring-slate-300"
+              [(ngModel)]="selectedVisitorId"
+              name="selectedVisitorId"
+            >
+              <option value="">-- Seleccione --</option>
+              <option *ngFor="let v of visitors" [value]="v.id">
+                {{ v.name }} {{ v.surname }} ({{ v.email }})
+              </option>
+            </select>
+            <button
+              type="button"
+              class="px-4 py-2 bg-slate-100 text-sm font-semibold text-slate-700 rounded hover:bg-slate-200 transition"
+              (click)="refreshVisitors()"
+            >
+              Refrescar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <button
+          type="button"
+          class="px-5 py-2 rounded-md bg-emerald-600 text-white font-medium transition hover:bg-emerald-700 disabled:opacity-60"
+          [disabled]="isSubmitting"
+          (click)="submit()"
+        >
+          {{ isSubmitting ? 'Registrando...' : 'Registrar salida' }}
+        </button>
+        <button
+          type="button"
+          class="px-5 py-2 rounded-md border border-slate-300 text-slate-700 font-medium hover:bg-slate-100 transition"
+          (click)="goBack()"
+        >
+          Volver
+        </button>
+      </div>
+
+      <p
+        *ngIf="message"
+        class="mt-4 text-sm"
+        [class.text-emerald-600]="messageType === 'success'"
+        [class.text-amber-700]="messageType === 'warning'"
+        [class.text-rose-600]="messageType === 'error'"
+      >
+        {{ message }}
+      </p>
+    </section>
+  

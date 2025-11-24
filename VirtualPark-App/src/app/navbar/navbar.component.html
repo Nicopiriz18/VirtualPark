@@ -1,0 +1,47 @@
+<mat-toolbar color="primary" class="sticky top-0 z-40 shadow-md backdrop-blur">
+  <div class="mx-auto flex w-full max-w-6xl items-center gap-6 px-4">
+    <div class="flex items-center gap-2">
+      <mat-icon class="text-white">park</mat-icon>
+      <span class="text-lg font-semibold tracking-wide text-white">VirtualPark</span>
+    </div>
+
+    <nav mat-tab-nav-bar class="hidden flex-1 md:flex">
+      <a
+        mat-tab-link
+        *ngFor="let link of displayedLinks"
+        [routerLink]="link.path"
+        routerLinkActive
+        #rla="routerLinkActive"
+        [active]="rla.isActive"
+      >
+        {{ link.label }}
+      </a>
+    </nav>
+
+    <div class="ml-auto flex items-center gap-2">
+      <button mat-stroked-button color="accent" *ngIf="!loggedIn" (click)="goLogin()">
+        <mat-icon class="mr-1 text-sm">login</mat-icon>
+        Iniciar sesión
+      </button>
+      <button mat-stroked-button color="accent" *ngIf="loggedIn" (click)="logout()">
+        <mat-icon class="mr-1 text-sm">logout</mat-icon>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<main class="mx-auto max-w-6xl px-4 py-6">
+  <router-outlet></router-outlet>
+</main>
+
+<button
+  mat-fab
+  color="primary"
+  class="fab-clock"
+  *ngIf="auth.hasRole('Administrator')"
+  (click)="goClock()"
+  title="Reloj del sistema"
+>
+  <mat-icon>schedule</mat-icon>
+</button>

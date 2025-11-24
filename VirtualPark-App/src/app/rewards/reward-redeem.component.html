@@ -1,0 +1,91 @@
+
+    <section class="mx-auto max-w-4xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Canje de recompensas</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Introduce el identificador de la recompensa para completar el canje.
+            </mat-card-subtitle>
+          </div>
+          <button mat-stroked-button color="primary" (click)="loadRewards()" [disabled]="isLoading()">
+            <mat-icon class="mr-2">redeem</mat-icon>
+            Ver recompensas disponibles
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid gap-4 md:grid-cols-2" (ngSubmit)="onRedeem()">
+            <mat-form-field appearance="outline" class="md:col-span-2">
+              <mat-label>ID de la recompensa</mat-label>
+              <input matInput formControlName="rewardId" placeholder="00000000-0000-0000-0000-000000000000" />
+              <mat-error *ngIf="form.controls['rewardId'].hasError('required') && form.controls['rewardId'].touched">
+                Debes indicar el identificador de la recompensa.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>¿Recuerdas el nombre?</mat-label>
+              <input matInput formControlName="hint" />
+              <mat-hint>Campo opcional para ayudarte a confirmar el canje.</mat-hint>
+            </mat-form-field>
+
+            <div class="md:col-span-2 flex justify-end gap-3">
+              <button mat-button type="button" (click)="form.reset(defaultFormValue)" [disabled]="isRedeeming()">
+                Limpiar
+              </button>
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isRedeeming()">
+                <ng-container *ngIf="!isRedeeming(); else redeeming">
+                  Canjear recompensa
+                </ng-container>
+              </button>
+              <ng-template #redeeming>
+                <span class="flex items-center gap-2">
+                  <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                  Validando canje...
+                </span>
+              </ng-template>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-header>
+          <mat-card-title class="text-xl font-semibold text-neutral">Recompensas disponibles</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ng-container *ngIf="!isLoading(); else loadingRewards">
+            <ng-container *ngIf="rewards().length; else emptyState">
+              <mat-nav-list>
+                <a mat-list-item *ngFor="let reward of rewards()" (click)="prefill(reward)">
+                  <mat-icon matListItemIcon>star</mat-icon>
+                  <div matListItemTitle>{{ reward.name }}</div>
+                  <div matListItemLine>{{ reward.description }}</div>
+                  <div matListItemMeta>{{ reward.costInPoints }} pts</div>
+                </a>
+              </mat-nav-list>
+              <p class="mt-3 text-xs text-neutral/50">
+                Selecciona una recompensa para autocompletar el formulario.
+              </p>
+            </ng-container>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-template #loadingRewards>
+        <div class="flex min-h-[20vh] items-center justify-center">
+          <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyState>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-10 text-center shadow-sm">
+          <mat-icon class="mb-4 text-4xl text-neutral/30">card_giftcard</mat-icon>
+          <h3 class="mb-2 text-xl font-semibold text-neutral">Aún no hay recompensas disponibles</h3>
+          <p class="text-neutral/60">
+            Cuando los administradores registren recompensas, podrás verlas aquí para canjearlas.
+          </p>
+        </div>
+      </ng-template>
+    </section>
+  

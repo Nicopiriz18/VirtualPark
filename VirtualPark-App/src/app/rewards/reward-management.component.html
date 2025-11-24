@@ -1,0 +1,156 @@
+
+    <section class="mx-auto max-w-5xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Gestión de recompensas</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Crea nuevas recompensas para que los visitantes puedan canjear sus puntos.
+            </mat-card-subtitle>
+          </div>
+          <button mat-stroked-button color="primary" (click)="loadRewards()" [disabled]="isLoading()">
+            <mat-icon class="mr-2">refresh</mat-icon>
+            Actualizar listado
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid gap-4 md:grid-cols-2" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre de la recompensa</mat-label>
+              <input matInput formControlName="name" />
+              <mat-error *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
+                El nombre es obligatorio.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Costo en puntos</mat-label>
+              <input matInput type="number" min="1" formControlName="costInPoints" />
+              <mat-error
+                *ngIf="
+                  (form.controls['costInPoints'].hasError('required') || form.controls['costInPoints'].hasError('min')) &&
+                  form.controls['costInPoints'].touched
+                "
+              >
+                Ingresa un valor mayor a cero.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="md:col-span-2">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput rows="3" formControlName="description"></textarea>
+              <mat-error *ngIf="form.controls['description'].hasError('required') && form.controls['description'].touched">
+                La descripción es obligatoria.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Stock disponible</mat-label>
+              <input matInput type="number" min="1" formControlName="availableQuantity" />
+              <mat-error
+                *ngIf="
+                  (form.controls['availableQuantity'].hasError('required') ||
+                    form.controls['availableQuantity'].hasError('min')) &&
+                  form.controls['availableQuantity'].touched
+                "
+              >
+                Ingresa un número mayor o igual a 1.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Nivel requerido (opcional)</mat-label>
+              <mat-select formControlName="requiredLevel">
+                <mat-option [value]="null">Sin requisito</mat-option>
+                <mat-option *ngFor="let level of membershipLevels" [value]="level">
+                  {{ level }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+              <button mat-button type="button" (click)="form.reset(defaultFormValue)" [disabled]="isCreating()">
+                Limpiar
+              </button>
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isCreating()">
+                <ng-container *ngIf="!isCreating(); else saving">
+                  Crear recompensa
+                </ng-container>
+              </button>
+              <ng-template #saving>
+                <span class="flex items-center gap-2">
+                  <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                  Guardando...
+                </span>
+              </ng-template>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-header>
+          <mat-card-title class="text-xl font-semibold text-neutral">Recompensas registradas</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <ng-container *ngIf="!isLoading(); else loadingRewards">
+            <ng-container *ngIf="rewards().length; else emptyState">
+              <div class="overflow-x-auto rounded-lg border border-neutral/10">
+                <table mat-table [dataSource]="rewards()" class="min-w-full bg-white">
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>Recompensa</th>
+                    <td mat-cell *matCellDef="let reward">
+                      <div class="flex flex-col">
+                        <span class="font-semibold text-neutral">{{ reward.name }}</span>
+                        <span class="text-xs text-neutral/60">{{ reward.description }}</span>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="cost">
+                    <th mat-header-cell *matHeaderCellDef class="w-32 text-right">Costo</th>
+                    <td mat-cell *matCellDef="let reward" class="text-right font-medium text-primary">
+                      {{ reward.costInPoints }} pts
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="stock">
+                    <th mat-header-cell *matHeaderCellDef class="w-32 text-right">Stock</th>
+                    <td mat-cell *matCellDef="let reward" class="text-right">
+                      {{ reward.availableQuantity > 0 ? reward.availableQuantity : 'Sin stock' }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="level">
+                    <th mat-header-cell *matHeaderCellDef class="w-44 text-right">Nivel requerido</th>
+                    <td mat-cell *matCellDef="let reward" class="text-right">
+                      {{ reward.requiredLevel ?? 'Todos' }}
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+              </div>
+            </ng-container>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-template #loadingRewards>
+        <div class="flex min-h-[20vh] items-center justify-center">
+          <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyState>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-10 text-center shadow-sm">
+          <mat-icon class="mb-4 text-4xl text-neutral/30">redeem</mat-icon>
+          <h3 class="mb-2 text-xl font-semibold text-neutral">Sin recompensas registradas</h3>
+          <p class="text-neutral/60">
+            Crea una recompensa para comenzar a ofrecer beneficios a los visitantes.
+          </p>
+        </div>
+      </ng-template>
+    </section>
+  

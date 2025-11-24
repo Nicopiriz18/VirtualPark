@@ -1,0 +1,98 @@
+@VirtualPark.WebApi_HostAddress = http://localhost:5233
+
+GET {{VirtualPark.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# Create User with Administrator Role
+POST {{VirtualPark.WebApi_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "name": "Juan",
+  "surname": "Pérez",
+  "email": "juan.perez@example.com",
+  "password": "Password123!",
+  "role": 0
+}
+
+###
+
+# Create User with Operator Role
+POST {{VirtualPark.WebApi_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "name": "María",
+  "surname": "García",
+  "email": "maria.garcia@example.com",
+  "password": "Password456!",
+  "role": 1
+}
+
+###
+
+# Get All Users
+GET {{VirtualPark.WebApi_HostAddress}}/api/users
+Accept: application/json
+
+###
+
+# Update Visitor Profile (with password)
+@visitorId = 00000000-0000-0000-0000-000000000000
+PUT {{VirtualPark.WebApi_HostAddress}}/api/visitors/{{visitorId}}
+Content-Type: application/json
+
+{
+  "name": "John",
+  "surname": "Doe Updated",
+  "email": "john.updated@example.com",
+  "password": "NewPassword123!"
+}
+
+###
+
+# Update Visitor Profile (without password)
+PUT {{VirtualPark.WebApi_HostAddress}}/api/visitors/{{visitorId}}
+Content-Type: application/json
+
+{
+  "name": "John",
+  "surname": "Doe Updated",
+  "email": "john.updated@example.com"
+}
+
+###
+
+# Purchase General Ticket
+POST {{VirtualPark.WebApi_HostAddress}}/api/tickets
+Content-Type: application/json
+
+{
+  "visitorId": "00000000-0000-0000-0000-000000000000",
+  "visitDate": "2025-10-15T10:00:00Z",
+  "type": 0
+}
+
+###
+
+# Purchase Special Event Ticket
+@eventId = 00000000-0000-0000-0000-000000000001
+POST {{VirtualPark.WebApi_HostAddress}}/api/tickets
+Content-Type: application/json
+
+{
+  "visitorId": "00000000-0000-0000-0000-000000000000",
+  "visitDate": "2025-10-20T10:00:00Z",
+  "type": 1,
+  "specialEventId": "{{eventId}}"
+}
+
+###
+
+# Check Special Event Capacity
+GET {{VirtualPark.WebApi_HostAddress}}/api/specialevents/{{eventId}}/capacity?ticketsRequested=5
+Accept: application/json
+
+###

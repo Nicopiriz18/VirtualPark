@@ -1,0 +1,123 @@
+
+    <section class="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary/10 to-primary/5 px-4 py-10">
+      <mat-card class="w-full max-w-3xl shadow-lg">
+        <mat-card-header class="mb-4 flex flex-col gap-1 text-center">
+          <h1 class="text-2xl font-semibold text-neutral">Crear una cuenta</h1>
+          <p class="text-sm text-neutral/70">
+            Regístrate para acceder a las funcionalidades administrativas y operativas de VirtualPark.
+          </p>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid gap-4 md:grid-cols-2" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" placeholder="Ingresá tu nombre" autocomplete="given-name" />
+              <mat-error *ngIf="form.controls['name'].hasError('required') && form.controls['name'].touched">
+                El nombre es obligatorio.
+              </mat-error>
+              <mat-error *ngIf="form.controls['name'].hasError('minlength')">
+                Debe tener al menos 2 caracteres.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="surname" placeholder="Ingresá tu apellido" autocomplete="family-name" />
+              <mat-error *ngIf="form.controls['surname'].hasError('required') && form.controls['surname'].touched">
+                El apellido es obligatorio.
+              </mat-error>
+              <mat-error *ngIf="form.controls['surname'].hasError('minlength')">
+                Debe tener al menos 2 caracteres.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="md:col-span-2">
+              <mat-label>Correo electrónico</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="nombre@virtualpark.com"
+                autocomplete="email"
+              />
+              <mat-error *ngIf="form.controls['email'].hasError('required') && form.controls['email'].touched">
+                El correo electrónico es obligatorio.
+              </mat-error>
+              <mat-error *ngIf="form.controls['email'].hasError('email') && !form.controls['email'].hasError('required')">
+                Ingresa un correo válido.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input
+                matInput
+                [type]="hidePassword() ? 'password' : 'text'"
+                formControlName="password"
+                autocomplete="new-password"
+              />
+              <button mat-icon-button matSuffix type="button" (click)="togglePassword()">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="form.controls['password'].hasError('required') && form.controls['password'].touched">
+                La contraseña es obligatoria.
+              </mat-error>
+              <mat-error *ngIf="form.controls['password'].hasError('minlength')">
+                Debe tener al menos 6 caracteres.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirmar contraseña</mat-label>
+              <input
+                matInput
+                [type]="hideConfirmPassword() ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                autocomplete="new-password"
+              />
+              <button mat-icon-button matSuffix type="button" (click)="toggleConfirmPassword()">
+                <mat-icon>{{ hideConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              <mat-error *ngIf="form.controls['confirmPassword'].hasError('required') && form.controls['confirmPassword'].touched">
+                Debes confirmar la contraseña.
+              </mat-error>
+              <mat-error *ngIf="form.controls['confirmPassword'].hasError('mismatch')">
+                Las contraseñas no coinciden.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="md:col-span-2">
+              <mat-label>Fecha de nacimiento</mat-label>
+              <input matInput type="date" formControlName="birthday" autocomplete="bday" />
+              <mat-hint>Debe ser una fecha válida.</mat-hint>
+              <mat-error *ngIf="form.controls['birthday'].hasError('required') && form.controls['birthday'].touched">
+                La fecha de nacimiento es obligatoria.
+              </mat-error>
+            </mat-form-field>
+
+            <div class="md:col-span-2 flex flex-wrap items-center justify-between gap-3 pt-4">
+              <button mat-button type="button" (click)="navigateToLogin()" [disabled]="isSubmitting()">
+                ¿Ya tienes una cuenta? Inicia sesión
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid || isSubmitting()"
+              >
+                <ng-container *ngIf="!isSubmitting(); else loading">
+                  Crear cuenta
+                </ng-container>
+                <ng-template #loading>
+                  <span class="flex items-center justify-center gap-2">
+                    <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                    Registrando datos...
+                  </span>
+                </ng-template>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  

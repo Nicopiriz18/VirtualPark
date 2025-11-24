@@ -1,0 +1,67 @@
+
+    <section class="form-container">
+      <mat-card class="form-paper">
+        <mat-card-header>
+          <mat-card-title>Crear nueva atracción</mat-card-title>
+          <mat-card-subtitle>
+            Completa los datos requeridos para registrar una nueva atracción en el parque.
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+              <mat-error *ngIf="f['name'].invalid && f['name'].touched">
+                Ingresa un nombre válido.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo</mat-label>
+              <input
+                matInput
+                formControlName="type"
+                placeholder="Montaña rusa, acuática, etc."
+              />
+              <mat-error *ngIf="f['type'].invalid && f['type'].touched">
+                El tipo es obligatorio.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Descripción</mat-label>
+              <textarea matInput rows="4" formControlName="description"></textarea>
+            </mat-form-field>
+
+            <div class="form-grid form-grid--two">
+              <mat-form-field appearance="outline">
+                <mat-label>Capacidad</mat-label>
+                <input matInput type="number" formControlName="capacity" min="1" />
+                <mat-error *ngIf="f['capacity'].invalid && f['capacity'].touched">
+                  La capacidad debe ser mayor a cero.
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Edad mínima</mat-label>
+                <input matInput type="number" formControlName="minAge" min="0" />
+                <mat-error *ngIf="f['minAge'].invalid && f['minAge'].touched">
+                Ingresa una edad válida.
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-actions">
+              <button mat-button type="button" (click)="goBack()" [disabled]="isSaving()">
+                Cancelar
+              </button>
+              <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isSaving()">
+                {{ isSaving() ? 'Guardando...' : 'Crear atracción' }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  

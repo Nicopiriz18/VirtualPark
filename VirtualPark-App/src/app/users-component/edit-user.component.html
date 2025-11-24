@@ -1,0 +1,87 @@
+
+    <section class="form-container">
+      <mat-card class="form-paper">
+        <mat-card-header>
+          <mat-card-title>Editar usuario</mat-card-title>
+          <mat-card-subtitle>
+            Ajusta los datos del usuario. Los cambios se aplican inmediatamente.
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <ng-container *ngIf="!isLoading(); else loader">
+            <form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre</mat-label>
+                <input matInput formControlName="name" />
+                <mat-error *ngIf="f['name'].invalid && f['name'].touched">
+                  Ingresa un nombre válido.
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Apellido</mat-label>
+                <input matInput formControlName="surname" />
+                <mat-error *ngIf="f['surname'].invalid && f['surname'].touched">
+                  Ingresa un apellido válido.
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="email" />
+                <mat-error *ngIf="f['email'].invalid && f['email'].touched">
+                  Ingresa un email válido.
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Nueva contraseña</mat-label>
+                <input matInput type="password" formControlName="password" />
+                <mat-hint>Déjalo vacío para mantener la contraseña actual.</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Rol</mat-label>
+                <mat-select formControlName="role">
+                  <mat-option *ngFor="let role of roles" [value]="role">
+                    {{ role }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field
+                *ngIf="showBirthDateField"
+                appearance="outline"
+              >
+                <mat-label>Fecha de nacimiento</mat-label>
+                <input matInput type="date" formControlName="birthDate" />
+                <mat-error *ngIf="f['birthDate'].invalid && f['birthDate'].touched">
+                  Debes ingresar una fecha para convertir al usuario en visitante.
+                </mat-error>
+              </mat-form-field>
+
+              <div class="form-actions">
+                <button mat-button type="button" (click)="goBack()" [disabled]="isSaving()">
+                  Cancelar
+                </button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="form.invalid || isSaving()"
+                >
+                  {{ isSaving() ? 'Guardando...' : 'Guardar cambios' }}
+                </button>
+              </div>
+            </form>
+          </ng-container>
+
+          <ng-template #loader>
+            <div class="loader">
+              <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+            </div>
+          </ng-template>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  

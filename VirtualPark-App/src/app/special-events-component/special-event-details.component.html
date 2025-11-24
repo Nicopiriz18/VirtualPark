@@ -1,0 +1,43 @@
+
+    <section class="details-wrapper">
+      <ng-container *ngIf="!isLoading(); else loader">
+        <mat-card *ngIf="event(); else notFound" class="details-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar color="primary">event</mat-icon>
+            <mat-card-title>{{ event()?.name }}</mat-card-title>
+            <mat-card-subtitle>
+              Programado para {{ event()?.date | date: 'fullDate' }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content class="details-content">
+            <div class="details-line">
+              <mat-icon fontIcon="people" color="primary"></mat-icon>
+              <span>Capacidad máxima: {{ event()?.maxCapacity }}</span>
+            </div>
+            <div class="details-line">
+              <mat-icon fontIcon="attach_money" color="primary"></mat-icon>
+              <span>Costo adicional: {{ event()?.additionalCost | currency: 'USD' }}</span>
+            </div>
+          </mat-card-content>
+          <mat-card-actions class="details-actions">
+            <button mat-stroked-button color="primary" (click)="goBack()">Volver</button>
+          </mat-card-actions>
+        </mat-card>
+      </ng-container>
+
+      <ng-template #loader>
+        <div class="loader">
+          <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #notFound>
+        <div class="empty-state">
+          <mat-icon>event_busy</mat-icon>
+          <h3>Evento no encontrado</h3>
+          <p>El evento solicitado no existe o fue eliminado.</p>
+          <button mat-flat-button color="primary" (click)="goBack()">Volver a eventos</button>
+        </div>
+      </ng-template>
+    </section>
+  

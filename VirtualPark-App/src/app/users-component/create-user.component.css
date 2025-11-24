@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  padding: 32px 16px;
+}
+
+.form-wrapper {
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.form-card {
+  width: 100%;
+  display: block;
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid mat-form-field {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+  padding-top: 16px;
+}
+
+mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2933;
+}
+
+mat-card-subtitle {
+  color: rgba(31, 41, 51, 0.6);
+}

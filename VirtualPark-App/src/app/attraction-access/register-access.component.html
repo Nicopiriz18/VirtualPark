@@ -1,0 +1,151 @@
+
+    <section class="mx-auto max-w-4xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Registrar acceso</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Registra el ingreso a una atracción para mantener el control de capacidad en tiempo real.
+            </mat-card-subtitle>
+          </div>
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            (click)="refreshAttractions()"
+            [disabled]="isLoadingAttractions()"
+          >
+            <mat-icon class="mr-2">refresh</mat-icon>
+            Actualizar atracciones
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid gap-4" (ngSubmit)="onSubmit()">
+            <div class="grid gap-4 md:grid-cols-2">
+              <mat-form-field appearance="outline">
+                <mat-label>Atracción</mat-label>
+                <mat-select formControlName="attractionId" [disabled]="isLoadingAttractions()">
+                  <mat-option value="">Selecciona una atracción</mat-option>
+                  <mat-option *ngFor="let attraction of attractions()" [value]="attraction.id">
+                    {{ attraction.name }} ({{ attraction.type }})
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls['attractionId'].touched && form.controls['attractionId'].invalid">
+                  Seleccionar una atracción es obligatorio.
+                </mat-error>
+              </mat-form-field>
+
+              <div>
+                <span class="mb-2 block text-sm font-medium text-neutral/80">Método de entrada</span>
+                <mat-button-toggle-group
+                  formControlName="entryMethod"
+                  (change)="onEntryMethodChange($event.value)"
+                  class="w-full"
+                >
+                  <mat-button-toggle value="QR" class="flex-1">QR</mat-button-toggle>
+                  <mat-button-toggle value="NFC" class="flex-1">NFC</mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <ng-container *ngIf="form.value.entryMethod === 'QR'; else visitorField">
+                <mat-form-field appearance="outline">
+                  <mat-label>Código QR</mat-label>
+                  <input matInput formControlName="qrCode" placeholder="UUID escaneado" />
+                  <mat-error *ngIf="form.controls['qrCode'].touched && form.controls['qrCode'].invalid">
+                    El código QR es obligatorio.
+                  </mat-error>
+                </mat-form-field>
+              </ng-container>
+              <ng-template #visitorField>
+                <mat-form-field appearance="outline">
+                  <mat-label>ID del visitante</mat-label>
+                  <input matInput formControlName="visitorId" placeholder="UUID del visitante" />
+                  <mat-error *ngIf="form.controls['visitorId'].touched && form.controls['visitorId'].invalid">
+                    El identificador del visitante es obligatorio.
+                  </mat-error>
+                </mat-form-field>
+              </ng-template>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Fecha y hora de ingreso</mat-label>
+                <input matInput type="datetime-local" formControlName="visitDate" />
+                <mat-hint>Si se deja vacío se usará la hora actual.</mat-hint>
+              </mat-form-field>
+            </div>
+
+            <div class="grid gap-4 md:grid-cols-2">
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo de ticket</mat-label>
+                <mat-select formControlName="ticketType">
+                  <mat-option *ngFor="let type of ticketTypes" [value]="type">
+                    {{ type === 'General' ? 'General' : 'Evento especial' }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>ID de evento especial (opcional)</mat-label>
+                <input matInput formControlName="specialEventId" placeholder="UUID del evento" />
+              </mat-form-field>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="flex flex-wrap justify-end gap-3">
+              <button
+                mat-button
+                type="button"
+                (click)="resetForm()"
+                [disabled]="isSubmitting()"
+              >
+                Limpiar
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid || isSubmitting()"
+              >
+                {{ isSubmitting() ? 'Registrando...' : 'Registrar acceso' }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-content class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="text-lg font-semibold text-neutral">Acciones rápidas</h3>
+            <p class="text-sm text-neutral/70">
+              Complementa la gestión de la atracción seleccionada.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button
+              mat-stroked-button
+              type="button"
+              color="primary"
+              (click)="goToCapacity()"
+              [disabled]="!form.value.attractionId"
+            >
+              <mat-icon class="mr-2">stacked_bar_chart</mat-icon>
+              Ver capacidad
+            </button>
+            <button
+              mat-stroked-button
+              type="button"
+              color="primary"
+              (click)="goToIncidents()"
+              [disabled]="!form.value.attractionId"
+            >
+              <mat-icon class="mr-2">report</mat-icon>
+              Ver incidencias
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  

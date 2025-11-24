@@ -1,0 +1,84 @@
+
+    <section class="form-container">
+      <mat-card class="form-paper">
+        <mat-card-header>
+          <mat-card-title>Crear usuario</mat-card-title>
+          <mat-card-subtitle>
+            Registra un nuevo usuario y asigna el rol correspondiente.
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre</mat-label>
+              <input matInput formControlName="name" />
+              <mat-error *ngIf="f['name'].invalid && f['name'].touched">
+                Ingresa un nombre válido.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Apellido</mat-label>
+              <input matInput formControlName="surname" />
+              <mat-error *ngIf="f['surname'].invalid && f['surname'].touched">
+                Ingresa un apellido válido.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" />
+              <mat-error *ngIf="f['email'].invalid && f['email'].touched">
+                Ingresa un email válido.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input matInput type="password" formControlName="password" />
+              <mat-error *ngIf="f['password'].invalid && f['password'].touched">
+                La contraseña debe tener al menos 6 caracteres.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Rol</mat-label>
+              <mat-select formControlName="role">
+                <mat-option *ngFor="let role of roles" [value]="role">
+                  {{ role }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['role'].invalid && f['role'].touched">
+                Selecciona un rol.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field
+              *ngIf="showBirthDateField"
+              appearance="outline"
+            >
+              <mat-label>Fecha de nacimiento</mat-label>
+              <input matInput type="date" formControlName="birthDate" />
+              <mat-error *ngIf="f['birthDate'].invalid && f['birthDate'].touched">
+                Debes ingresar una fecha para registrar un visitante.
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-button type="button" (click)="goBack()" [disabled]="isSaving()">
+                Cancelar
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid || isSaving()"
+              >
+                {{ isSaving() ? 'Guardando...' : 'Crear usuario' }}
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  

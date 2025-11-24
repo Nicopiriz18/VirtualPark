@@ -1,0 +1,200 @@
+
+    <section class="mx-auto max-w-6xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Estrategias de puntaje</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Define la estrategia activa para calcular los puntos de los visitantes.
+            </mat-card-subtitle>
+          </div>
+          <button mat-stroked-button color="primary" (click)="loadStrategies()" [disabled]="isLoadingStrategies()">
+            <mat-icon class="mr-2">refresh</mat-icon>
+            Actualizar
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <ng-container *ngIf="!isLoadingStrategies(); else strategiesLoading">
+            <div class="grid gap-4 md:grid-cols-2">
+              <mat-card class="border border-neutral/10 bg-neutral-50 shadow-none">
+                <mat-card-header>
+                  <mat-card-title class="text-lg font-semibold text-neutral">Estrategia activa</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <ng-container *ngIf="activeStrategy(); else noActive">
+                    <div class="rounded-lg bg-primary/10 px-4 py-3 text-primary">
+                      <mat-icon class="mr-2 align-middle">stars</mat-icon>
+                      <span class="font-medium">{{ activeStrategy() }}</span>
+                    </div>
+                  </ng-container>
+                  <ng-template #noActive>
+                    <p class="text-sm text-neutral/60">
+                      Aún no se ha establecido una estrategia activa.
+                    </p>
+                  </ng-template>
+                </mat-card-content>
+              </mat-card>
+
+              <mat-card class="border border-neutral/10 shadow-none">
+                <mat-card-header>
+                  <mat-card-title class="text-lg font-semibold text-neutral">Estrategias disponibles</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <mat-nav-list>
+                    <a
+                      mat-list-item
+                      *ngFor="let strategy of availableStrategies()"
+                      (click)="onSetStrategy(strategy)"
+                      [class.bg-primary/10]="strategy === activeStrategy()"
+                      class="rounded-lg transition hover:bg-primary/10"
+                    >
+                      <mat-icon matListItemIcon>
+                        {{ strategy === activeStrategy() ? 'check_circle' : 'radio_button_unchecked' }}
+                      </mat-icon>
+                      <div matListItemTitle>{{ strategy }}</div>
+                      <div matListItemMeta *ngIf="strategy === activeStrategy()">Activo</div>
+                    </a>
+                  </mat-nav-list>
+                  <p class="mt-2 text-xs text-neutral/50">
+                    Selecciona una estrategia para activarla.
+                  </p>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Subir estrategia personalizada</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Copia un DLL que implemente <code>IScoringStrategy</code> para que aparezca en la lista después de subirlo.
+            </mat-card-subtitle>
+          </div>
+        </mat-card-header>
+        <mat-card-content class="space-y-3">
+          <p class="text-sm text-neutral/70">
+            Selecciona un archivo DLL válido para cargarlo en la carpeta de estrategias administradas.
+          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <label
+              for="strategy-plugin-input"
+              class="flex items-center gap-2 rounded-lg border border-dashed border-neutral/30 px-4 py-2 text-sm font-semibold text-neutral transition hover:border-primary hover:text-primary cursor-pointer"
+            >
+              <mat-icon>upload</mat-icon>
+              <span>Elegir DLL</span>
+            </label>
+            <input
+              id="strategy-plugin-input"
+              type="file"
+              accept=".dll"
+              hidden
+              (change)="onPluginSelected($event)"
+            />
+            <span *ngIf="selectedPlugin()" class="text-sm text-neutral/80">Seleccionado: {{ selectedPlugin()?.name }}</span>
+            <button
+              mat-flat-button
+              color="primary"
+              (click)="onUploadPlugin()"
+              [disabled]="!selectedPlugin() || isUploadingPlugin()"
+              class="whitespace-nowrap"
+            >
+              <ng-container *ngIf="!isUploadingPlugin(); else uploadingPluginTemplate">
+                Subir estrategia
+              </ng-container>
+              <ng-template #uploadingPluginTemplate>
+                <span class="flex items-center gap-2">
+                  <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                  Subiendo...
+                </span>
+              </ng-template>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Ranking diario</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Consulta los visitantes con mejor desempeño para una fecha específica.
+            </mat-card-subtitle>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="rankingForm" class="mb-4 flex flex-wrap items-end gap-3" (ngSubmit)="onLoadRanking()">
+            <mat-form-field appearance="outline" class="min-w-[220px]">
+              <mat-label>Fecha</mat-label>
+              <input matInput type="date" formControlName="date" />
+              <mat-error *ngIf="rankingForm.controls['date'].hasError('required') && rankingForm.controls['date'].touched">
+                Selecciona una fecha para consultar.
+              </mat-error>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="submit" [disabled]="rankingForm.invalid || isLoadingRanking()">
+              <ng-container *ngIf="!isLoadingRanking(); else rankingLoading">
+                Consultar ranking
+              </ng-container>
+            </button>
+            <ng-template #rankingLoading>
+              <span class="flex items-center gap-2 text-sm text-neutral/60">
+                <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                Obteniendo datos...
+              </span>
+            </ng-template>
+          </form>
+
+          <ng-container *ngIf="ranking().length; else emptyRanking">
+            <div class="overflow-x-auto rounded-lg border border-neutral/10">
+              <table mat-table [dataSource]="ranking()" class="min-w-full bg-white">
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef class="w-20 text-center">Posición</th>
+                  <td mat-cell *matCellDef="let row" class="text-center font-semibold text-primary">
+                    #{{ row.position }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="visitor">
+                  <th mat-header-cell *matHeaderCellDef>Visitante</th>
+                  <td mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                      <span class="font-medium text-neutral">{{ row.visitorName }}</span>
+                      <span class="text-xs text-neutral/60">{{ row.visitorId }}</span>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="points">
+                  <th mat-header-cell *matHeaderCellDef class="w-32 text-right">Puntos</th>
+                  <td mat-cell *matCellDef="let row" class="text-right font-semibold text-neutral">
+                    {{ row.totalPoints }}
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="rankingColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: rankingColumns"></tr>
+              </table>
+            </div>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-template #strategiesLoading>
+        <div class="flex min-h-[20vh] items-center justify-center">
+          <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyRanking>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-10 text-center shadow-sm">
+          <mat-icon class="mb-4 text-4xl text-neutral/30">leaderboard</mat-icon>
+          <h3 class="mb-2 text-xl font-semibold text-neutral">Sin resultados para la fecha consultada</h3>
+          <p class="text-neutral/60">
+            Ajusta la fecha o verifica que existan registros de puntos para ese día.
+          </p>
+        </div>
+      </ng-template>
+    </section>
+  

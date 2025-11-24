@@ -1,0 +1,208 @@
+
+    <section class="mx-auto max-w-6xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Incidencias</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Registra y gestiona incidentes asociados a las atracciones.
+            </mat-card-subtitle>
+          </div>
+          <button
+            mat-stroked-button
+            color="primary"
+            type="button"
+            (click)="refreshAttractions()"
+            [disabled]="isLoadingAttractions()"
+          >
+            <mat-icon class="mr-2">refresh</mat-icon>
+            Actualizar listado
+          </button>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="selectionForm" class="grid gap-4 md:grid-cols-[2fr_auto_auto] md:items-end">
+            <mat-form-field appearance="outline" class="md:col-span-1">
+              <mat-label>Atracción</mat-label>
+              <mat-select
+                formControlName="attractionId"
+                (selectionChange)="onAttractionChange($event.value)"
+                [disabled]="isLoadingAttractions()"
+              >
+                <mat-option value="">Selecciona una atracción</mat-option>
+                <mat-option *ngFor="let attraction of attractions()" [value]="attraction.id">
+                  {{ attraction.name }} ({{ attraction.type }})
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="selectionForm.controls['attractionId'].touched && !selectionForm.controls['attractionId'].value">
+                Selecciona una atracción para continuar.
+              </mat-error>
+            </mat-form-field>
+
+            <button
+              mat-stroked-button
+              color="primary"
+              type="button"
+              class="md:justify-self-end"
+              (click)="goToRegister()"
+              [disabled]="!currentAttractionId()"
+            >
+              Registrar acceso
+            </button>
+            <button
+              mat-stroked-button
+              color="primary"
+              type="button"
+              class="md:justify-self-end"
+              (click)="goToCapacity()"
+              [disabled]="!currentAttractionId()"
+            >
+              Ver capacidad
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="grid gap-6 lg:grid-cols-2">
+        <mat-card class="shadow-sm">
+          <mat-card-header class="flex flex-col gap-2">
+            <mat-card-title class="text-xl font-semibold text-neutral">
+              Registrar incidencia
+            </mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Describe el incidente para mantener un registro actualizado.
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <form [formGroup]="incidentForm" class="grid gap-4" (ngSubmit)="onCreateIncident()">
+              <mat-form-field appearance="outline">
+                <mat-label>Título</mat-label>
+                <input matInput formControlName="title" placeholder="Falla de motor, mantenimiento, etc." />
+                <mat-error *ngIf="incidentForm.controls['title'].touched && incidentForm.controls['title'].invalid">
+                  El título es obligatorio.
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Descripción</mat-label>
+                <textarea matInput rows="4" formControlName="description"></textarea>
+                <mat-error *ngIf="incidentForm.controls['description'].touched && incidentForm.controls['description'].invalid">
+                  Ingresa una descripción detallada.
+                </mat-error>
+              </mat-form-field>
+
+              <div class="grid gap-4 sm:grid-cols-2">
+                <mat-form-field appearance="outline">
+                  <mat-label>Estado inicial</mat-label>
+                  <mat-select formControlName="status">
+                    <mat-option [value]="true">Abierta</mat-option>
+                    <mat-option [value]="false">Cerrada</mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Fecha del incidente</mat-label>
+                  <input matInput type="datetime-local" formControlName="date" />
+                </mat-form-field>
+              </div>
+
+              <div class="flex flex-wrap justify-end gap-3 pt-2">
+                <button
+                  mat-button
+                  type="button"
+                  (click)="incidentForm.reset({ status: true, date: '' })"
+                  [disabled]="isSubmitting()"
+                >
+                  Limpiar
+                </button>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  type="submit"
+                  [disabled]="incidentForm.invalid || !currentAttractionId() || isSubmitting()"
+                >
+                  {{ isSubmitting() ? 'Guardando...' : 'Registrar incidencia' }}
+                </button>
+              </div>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="shadow-sm">
+          <mat-card-header class="flex flex-col gap-2">
+            <mat-card-title class="text-xl font-semibold text-neutral">
+              Historial de incidencias
+            </mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Visualiza el estado de cada incidencia y toma acciones de seguimiento.
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <ng-container *ngIf="currentAttractionId(); else selectAttraction">
+              <ng-container *ngIf="!isLoadingIncidents(); else incidentsLoading">
+                <ng-container *ngIf="incidents().length; else emptyIncidents">
+                  <div class="space-y-4">
+                    <mat-card
+                      *ngFor="let incident of incidents()"
+                      class="border border-neutral/10 bg-neutral-50 shadow-none"
+                    >
+                      <mat-card-header class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <mat-card-title class="text-lg font-semibold text-neutral">
+                            {{ incident.title }}
+                          </mat-card-title>
+                          <mat-card-subtitle class="text-xs uppercase tracking-wide text-neutral/60">
+                            {{ incident.date | date: 'medium' }}
+                          </mat-card-subtitle>
+                        </div>
+                        <span
+                          class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
+                          [ngClass]="incident.status ? 'bg-red-100 text-red-700' : 'bg-primary/10 text-primary'"
+                        >
+                          {{ incident.status ? 'Abierta' : 'Cerrada' }}
+                        </span>
+                      </mat-card-header>
+                      <mat-card-content class="text-sm text-neutral/75">
+                        <p>{{ incident.description }}</p>
+                      </mat-card-content>
+                      <mat-divider></mat-divider>
+                      <mat-card-actions class="flex flex-wrap gap-2">
+                        <button mat-button type="button" (click)="handleStatusChange(incident)" color="primary">
+                          {{ incident.status ? 'Marcar como resuelta' : 'Reabrir incidencia' }}
+                        </button>
+                      </mat-card-actions>
+                    </mat-card>
+                  </div>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <ng-template #selectAttraction>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-8 text-center shadow-sm">
+          <mat-icon class="mb-3 text-4xl text-neutral/30">report_problem</mat-icon>
+          <h3 class="text-lg font-semibold text-neutral">Selecciona una atracción</h3>
+          <p class="text-neutral/60">
+            Para consultar o registrar incidencias primero elige una atracción del listado.
+          </p>
+        </div>
+      </ng-template>
+
+      <ng-template #incidentsLoading>
+        <div class="flex min-h-[20vh] items-center justify-center">
+          <mat-progress-spinner mode="indeterminate" diameter="48"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyIncidents>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-8 text-center shadow-sm">
+          <mat-icon class="mb-3 text-4xl text-neutral/30">inbox</mat-icon>
+          <h3 class="text-lg font-semibold text-neutral">Sin incidencias registradas</h3>
+          <p class="text-neutral/60">
+            No se han reportado incidentes para esta atracción. Utiliza el formulario para registrar una nueva.
+          </p>
+        </div>
+      </ng-template>
+    </section>
+  

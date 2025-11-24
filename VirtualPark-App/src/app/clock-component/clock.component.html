@@ -1,0 +1,22 @@
+
+    <div class="clock-container">
+      <h2>Reloj del Sistema</h2>
+      <div *ngIf="clock">
+        <p>Fecha y hora actual: <b>{{ clock.formattedDateTime }}</b></p>
+        <p *ngIf="clock.isSystemTime">Modo: <span style="color:green">Automático</span></p>
+        <p *ngIf="!clock.isSystemTime">Modo: <span style="color:orange">Manual</span></p>
+        <p *ngIf="clock.lastModified">Última modificación: {{ clock.lastModified | date:'short' }}</p>
+        <p *ngIf="clock.timeZone">Zona horaria: {{ clock.timeZone }}</p>
+      </div>
+      <form *ngIf="isAdmin" [formGroup]="form" (ngSubmit)="setClock()">
+        <label for="newValue">Nueva fecha y hora (YYYY-MM-DDTHH:MM):</label>
+        <input id="newValue" formControlName="newValue" />
+        <div *ngIf="form.controls['newValue']?.invalid && (form.controls['newValue']?.touched || form.controls['newValue']?.dirty)">
+          <small *ngIf="form.controls['newValue']?.errors?.['required']">El valor es requerido.</small>
+          <small *ngIf="form.controls['newValue']?.errors?.['pattern']">Formato inválido. Use YYYY-MM-DDTHH:MM</small>
+        </div>
+        <button type="submit" [disabled]="form.invalid">Actualizar</button>
+      </form>
+      <div *ngIf="message">{{ message }}</div>
+    </div>
+  

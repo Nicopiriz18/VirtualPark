@@ -1,0 +1,146 @@
+
+    <section class="mx-auto max-w-6xl px-4 py-6 space-y-6">
+      <mat-card class="shadow-sm">
+        <mat-card-header class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+          <div>
+            <mat-card-title class="text-2xl font-semibold text-neutral">Uso de atracciones</mat-card-title>
+            <mat-card-subtitle class="text-sm text-neutral/70">
+              Consulta el tráfico de visitantes por atracción en el rango de fechas seleccionado.
+            </mat-card-subtitle>
+          </div>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="grid gap-4 md:grid-cols-[1fr_1fr_auto]" (ngSubmit)="onRunReport()">
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha inicio</mat-label>
+              <input matInput type="date" formControlName="startDate" />
+              <mat-error *ngIf="form.controls['startDate'].hasError('required') && form.controls['startDate'].touched">
+                Selecciona una fecha de inicio.
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha fin</mat-label>
+              <input matInput type="date" formControlName="endDate" />
+              <mat-error *ngIf="form.controls['endDate'].hasError('required') && form.controls['endDate'].touched">
+                Selecciona una fecha de fin.
+              </mat-error>
+            </mat-form-field>
+
+            <button
+              mat-flat-button
+              color="primary"
+              class="md:justify-self-end"
+              type="submit"
+              [disabled]="form.invalid || isLoading()"
+            >
+              <ng-container *ngIf="!isLoading(); else loading">
+                Generar reporte
+              </ng-container>
+            </button>
+            <ng-template #loading>
+              <span class="flex items-center gap-2">
+                <mat-progress-spinner diameter="18" mode="indeterminate"></mat-progress-spinner>
+                Generando...
+              </span>
+            </ng-template>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="shadow-sm">
+        <mat-card-content>
+          <ng-container *ngIf="!isLoading(); else tableLoading">
+            <ng-container *ngIf="reports().length; else emptyState">
+              <div class="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-neutral/60">
+                <div>
+                  Rango analizado:
+                  <strong class="text-neutral">
+                    {{ form.value.startDate | date: 'longDate' }} - {{ form.value.endDate | date: 'longDate' }}
+                  </strong>
+                </div>
+                <div>
+                  Total de atracciones con visitas registradas:
+                  <strong class="text-neutral">{{ reports().length }}</strong>
+                </div>
+              </div>
+
+              <div class="overflow-x-auto rounded-lg border border-neutral/10">
+                <table mat-table [dataSource]="reports()" class="min-w-full bg-white">
+                  <ng-container matColumnDef="attraction">
+                    <th mat-header-cell *matHeaderCellDef> Atracción </th>
+                    <td mat-cell *matCellDef="let row">
+                      <div class="flex flex-col">
+                        <span class="font-medium text-neutral">{{ row.attractionName }}</span>
+                        <span class="text-xs uppercase tracking-wide text-neutral/50">{{ row.attractionType }}</span>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="visits">
+                    <th mat-header-cell *matHeaderCellDef> Visitas </th>
+                    <td mat-cell *matCellDef="let row">{{ row.visitCount }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="average">
+                    <th mat-header-cell *matHeaderCellDef> Promedio diario </th>
+                    <td mat-cell *matCellDef="let row">{{ row.averageVisitsPerDay }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="capacity">
+                    <th mat-header-cell *matHeaderCellDef> Capacidad </th>
+                    <td mat-cell *matCellDef="let row">{{ row.capacity }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="occupancy">
+                    <th mat-header-cell *matHeaderCellDef> Ocupación </th>
+                    <td mat-cell *matCellDef="let row">
+                      <span class="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+                        {{ row.occupancyRate | number: '1.0-1' }}%
+                      </span>
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="peakDay">
+                    <th mat-header-cell *matHeaderCellDef> Pico de visitas </th>
+                    <td mat-cell *matCellDef="let row">
+                      <ng-container *ngIf="row.peakDay; else noPeak">
+                        <div class="flex flex-col">
+                          <span class="font-medium text-neutral">
+                            {{ row.peakDay | date: 'mediumDate' }}
+                          </span>
+                          <span class="text-xs text-neutral/60">{{ row.peakDayVisits }} visitas</span>
+                        </div>
+                      </ng-container>
+                      <ng-template #noPeak>
+                        <span class="text-xs text-neutral/50">Sin datos</span>
+                      </ng-template>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+              </div>
+            </ng-container>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+
+      <ng-template #tableLoading>
+        <div class="flex min-h-[20vh] items-center justify-center">
+          <mat-progress-spinner diameter="48" mode="indeterminate"></mat-progress-spinner>
+        </div>
+      </ng-template>
+
+      <ng-template #emptyState>
+        <div class="rounded-lg border border-dashed border-neutral/20 bg-white p-10 text-center shadow-sm">
+          <mat-icon class="mb-4 text-4xl text-neutral/30">insights</mat-icon>
+          <h3 class="mb-2 text-xl font-semibold text-neutral">Sin registros en el periodo seleccionado</h3>
+          <p class="text-neutral/60">
+            Ajusta el rango de fechas o verifica que las atracciones hayan registrado accesos durante ese periodo.
+          </p>
+        </div>
+      </ng-template>
+    </section>
+  

@@ -1,0 +1,20 @@
+// <copyright file="AttractionListDto.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace VirtualPark.DTOs.Attractions.Responses;
+
+public class AttractionListDto
+{
+    public required Guid Id { get; set; }
+
+    public required string Name { get; set; }
+
+    public required string Type { get; set; }
+
+    public required int MinAge { get; set; }
+
+    public required int Capacity { get; set; }
+
+    public bool HasActiveIncidences { get; set; }
+}

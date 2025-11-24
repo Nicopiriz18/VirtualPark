@@ -1,0 +1,75 @@
+
+    <section class="form-container">
+      <mat-card class="form-paper">
+        <mat-card-header>
+          <mat-card-title>Comprar entrada</mat-card-title>
+          <mat-card-subtitle>
+            Completa los datos para generar una nueva entrada de acceso.
+          </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="form" class="form-grid" (ngSubmit)="onSubmit()">
+            <input type="hidden" formControlName="visitorId" />
+            <mat-form-field appearance="outline">
+              <mat-label>Visitante</mat-label>
+              <input
+                matInput
+                [value]="currentUserEmail || 'Usuario sin email disponible'"
+                disabled
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de visita</mat-label>
+              <input matInput type="datetime-local" formControlName="visitDate" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de entrada</mat-label>
+              <mat-select formControlName="ticketType" (selectionChange)="onTicketTypeChange()">
+                <mat-option value="General">General</mat-option>
+                <mat-option value="SpecialEvent">Evento especial</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="outline"
+              *ngIf="form.value.ticketType === 'SpecialEvent'"
+            >
+              <mat-label>Evento especial</mat-label>
+              <mat-select formControlName="specialEventId">
+                <mat-option value="">-- Seleccione --</mat-option>
+                <mat-option *ngFor="let event of events" [value]="event.id">
+                  {{ event.name }} - {{ event.date | date: 'short' }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="f['specialEventId'].invalid && f['specialEventId'].touched">
+                Selecciona un evento especial.
+              </mat-error>
+            </mat-form-field>
+
+            <div class="form-actions">
+              <button mat-stroked-button type="button" (click)="resetForm()" [disabled]="isProcessing()">
+                Limpiar
+              </button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid || isProcessing()"
+              >
+                {{ isProcessing() ? 'Procesando...' : 'Comprar entrada' }}
+              </button>
+            </div>
+          </form>
+
+          <section *ngIf="ticket()" class="ticket-card">
+            <h3>Ticket generado</h3>
+            <p><strong>Id:</strong> {{ ticket()?.id }}</p>
+            <p><strong>QrCode:</strong> {{ ticket()?.qrCode }}</p>
+            <p><strong>Fecha de visita:</strong> {{ ticket()?.visitDate | date: 'short' }}</p>
+          </section>
+        </mat-card-content>
+      </mat-card>
+    </section>
+  
