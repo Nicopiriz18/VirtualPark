@@ -24,6 +24,12 @@ Este proyecto fue desarrollado en el marco de la materia **Diseño de Aplicacion
 
 El backend sigue los principios de **Clean Architecture** con capas bien delimitadas, el frontend es una SPA moderna en Angular con componentes standalone, y la infraestructura de CI/CD automatiza la validación del código en cada push y pull request.
 
+## Documentación
+
+El documento completo del proyecto (requerimientos, diseño, decisiones de arquitectura y diagramas) está disponible en el siguiente PDF:
+
+[**documentacion.pdf**](./documentacion.pdf)
+
 ## Stack tecnológico
 
 | Capa | Tecnologías |
