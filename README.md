@@ -13,15 +13,6 @@
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white" alt="GitHub Actions" />
 </p>
-
-**Main**&ensp;
-![Build - Test](https://github.com/IngSoft-DA2/310896-313578-303636/actions/workflows/build-test.yml/badge.svg?branch=main&event=push)
-![Code Analysis](https://github.com/IngSoft-DA2/310896-313578-303636/actions/workflows/code-analysis.yml/badge.svg?branch=main&event=push)
-
-**Develop**&ensp;
-![Build - Test](https://github.com/IngSoft-DA2/310896-313578-303636/actions/workflows/build-test.yml/badge.svg?branch=develop&event=push)
-![Code Analysis](https://github.com/IngSoft-DA2/310896-313578-303636/actions/workflows/code-analysis.yml/badge.svg?branch=develop&event=push)
-
 ---
 
 ## Acerca del proyecto
